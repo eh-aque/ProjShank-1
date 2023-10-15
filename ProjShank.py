@@ -13,6 +13,25 @@ import joblib
 # Load the dataset
 df = pd.read_csv('Project 1 data.csv')
 
+# Data Visualization
+from mpl_toolkits.mplot3d import Axes3D
+
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+
+ax.scatter(df['X'], df['Y'], df['Z'])
+ax.view_init(30, 185)  # Set the view angle
+
+plt.show()
+
+# Correlation Analysis
+correlation_matrix = df.corr()
+
+plt.figure(figsize=(10, 8))
+sns.heatmap(correlation_matrix, annot=True, cmap='PiYG', fmt=".2f", linewidths=0.5)
+plt.title("Pearson Correlation Matrix")
+plt.show()
+
 # Classification Model Development
 # Separate features (X: 'X', 'Y', 'Z') and target (y: 'Step')
 coords = df[['X', 'Y', 'Z']]
