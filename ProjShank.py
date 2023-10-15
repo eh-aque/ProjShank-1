@@ -4,12 +4,14 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
 from sklearn.metrics import mean_squared_error, r2_score
 
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+
+import joblib
 
 # Load the dataset
 df = pd.read_csv('Project 1 data.csv')
@@ -46,16 +48,15 @@ scaler = StandardScaler()
 coords_train = scaler.fit_transform(coords_train)
 coords_test = scaler.transform(coords_test)
 
-# Model 1: Linear Regression
-linear_regressor = LinearRegression()
-linear_regressor.fit(coords_train, step_train)
-linear_predictions = linear_regressor.predict(coords_test)
-mse_linear = mean_squared_error(step_test, linear_predictions)
-r2_linear = r2_score(step_test, linear_predictions)
+# Model 1: Logistic Regression
+logistic_regressor = LogisticRegression()
+logistic_regressor.fit(coords_train, step_train)
+logistic_predictions = logistic_regressor.predict(coords_test)
 
-print("Linear Regression:")
-print("Mean Squared Error:", mse_linear)
-print("R-squared:", r2_linear)
+print("Logistic Regression:")
+print("Accuracy:", accuracy_score(step_test, logistic_predictions))
+print("Confusion Matrix:\n", confusion_matrix(step_test, logistic_predictions))
+print("Classification Report:\n", classification_report(step_test, logistic_predictions))
 
 # Model 2: Support Vector Machine (SVM)
 svm_classifier = SVC()
@@ -76,3 +77,22 @@ print("Random Forest Classifier:")
 print("Accuracy:", accuracy_score(step_test, rf_predictions))
 print("Confusion Matrix:\n", confusion_matrix(step_test, rf_predictions))
 print("Classification Report:\n", classification_report(step_test, rf_predictions))  # This should be removed for regression
+
+
+"""Save and load selected model, model 2, SVM"""
+
+joblib.dump(svm_classifier, 'svm_model.joblib')
+loaded_svm_model = joblib.load('svm_model.joblib')
+
+coordinates_to_predict = np.array([[9.375, 3.0625, 1.51],
+                                   [6.995, 5.125, 0.3875],
+                                   [0, 3.0625, 1.93],
+                                   [9.4, 3, 1.8],
+                                   [9.4, 3, 1.3]])
+
+for idx, coord_set in enumerate(coordinates_to_predict):
+    step_prediction = loaded_svm_model.predict(coord_set.reshape(1, -1))
+    print(f"Predicted Step for coordinates {idx + 1}: {step_prediction}")
+
+
+
